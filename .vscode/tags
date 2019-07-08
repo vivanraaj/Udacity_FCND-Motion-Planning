@@ -1,0 +1,80 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+ARMING	../backyard_flyer_solution.py	/^    ARMING = 1$/;"	kind:variable	line:18
+ARMING	../motion_planning.py	/^	ARMING = auto()$/;"	kind:variable	line:26
+Action	../planning_utils.py	/^class Action(Enum):$/;"	kind:class	line:74
+BackyardFlyer	../backyard_flyer_solution.py	/^class BackyardFlyer(Drone):$/;"	kind:class	line:25
+DISARMING	../backyard_flyer_solution.py	/^    DISARMING = 5$/;"	kind:variable	line:22
+DISARMING	../motion_planning.py	/^	DISARMING = auto()$/;"	kind:variable	line:30
+EAST	../planning_utils.py	/^	EAST = (0, 1, 1)$/;"	kind:variable	line:84
+LANDING	../backyard_flyer_solution.py	/^    LANDING = 4$/;"	kind:variable	line:21
+LANDING	../motion_planning.py	/^	LANDING = auto()$/;"	kind:variable	line:29
+MANUAL	../backyard_flyer_solution.py	/^    MANUAL = 0$/;"	kind:variable	line:17
+MANUAL	../motion_planning.py	/^	MANUAL = auto()$/;"	kind:variable	line:25
+MotionPlanning	../motion_planning.py	/^class MotionPlanning(Drone):$/;"	kind:class	line:34
+NORTH	../planning_utils.py	/^	NORTH = (-1, 0, 1)$/;"	kind:variable	line:85
+NORTH_EAST	../planning_utils.py	/^	NORTH_EAST = (-1, 1, np.sqrt(2))$/;"	kind:variable	line:88
+NORTH_WEST	../planning_utils.py	/^	NORTH_WEST = (-1, -1, np.sqrt(2))$/;"	kind:variable	line:87
+PLANNING	../motion_planning.py	/^	PLANNING = auto()$/;"	kind:variable	line:31
+SOUTH	../planning_utils.py	/^	SOUTH = (1, 0, 1)$/;"	kind:variable	line:86
+SOUTH_EAST	../planning_utils.py	/^	SOUTH_EAST = (1, 1, np.sqrt(2))$/;"	kind:variable	line:90
+SOUTH_WEST	../planning_utils.py	/^	SOUTH_WEST = (1, -1, np.sqrt(2))$/;"	kind:variable	line:89
+States	../backyard_flyer_solution.py	/^class States(Enum):$/;"	kind:class	line:16
+States	../motion_planning.py	/^class States(Enum):$/;"	kind:class	line:23
+TAKEOFF	../backyard_flyer_solution.py	/^    TAKEOFF = 2$/;"	kind:variable	line:19
+TAKEOFF	../motion_planning.py	/^	TAKEOFF = auto()$/;"	kind:variable	line:27
+WAYPOINT	../backyard_flyer_solution.py	/^    WAYPOINT = 3$/;"	kind:variable	line:20
+WAYPOINT	../motion_planning.py	/^	WAYPOINT = auto()$/;"	kind:variable	line:28
+WEST	../planning_utils.py	/^	WEST = (0, -1, 1)$/;"	kind:variable	line:83
+__init__	../backyard_flyer_solution.py	/^    def __init__(self, connection):$/;"	kind:member	line:27
+__init__	../motion_planning.py	/^	def __init__(self, connection):$/;"	kind:member	line:36
+a_star	../planning_utils.py	/^def a_star(grid, h, start, goal):$/;"	kind:function	line:132
+args	../motion_planning.py	/^	args = parser.parse_args()$/;"	kind:variable	line:294
+arming_transition	../backyard_flyer_solution.py	/^    def arming_transition(self):$/;"	kind:member	line:77
+arming_transition	../motion_planning.py	/^	def arming_transition(self):$/;"	kind:member	line:86
+backyard_flyer_solution.py	../backyard_flyer_solution.py	1;"	kind:file	line:1
+bres	../planning_utils.py	/^def bres(path, grid):$/;"	kind:function	line:218
+calculate_box	../backyard_flyer_solution.py	/^    def calculate_box(self):$/;"	kind:member	line:72
+coll	../planning_utils.py	/^def coll(path):$/;"	kind:function	line:248
+collides	../planning_utils.py	/^def collides(polygons, point):$/;"	kind:function	line:200
+collinearity	../planning_utils.py	/^def collinearity(p1, p2, p3, epsilon): $/;"	kind:function	line:12
+conn	../backyard_flyer_solution.py	/^    conn = MavlinkConnection('tcp:127.0.0.1:5760', threaded=False, PX4=False)$/;"	kind:variable	line:135
+conn	../motion_planning.py	/^	conn = MavlinkConnection('tcp:{0}:{1}'.format(args.host, args.port), timeout=60)$/;"	kind:variable	line:296
+cost	../planning_utils.py	/^	def cost(self):$/;"	kind:member	line:93
+create_grid	../planning_utils.py	/^def create_grid(data, drone_altitude, safety_distance):$/;"	kind:function	line:24
+delta	../planning_utils.py	/^	def delta(self):$/;"	kind:member	line:97
+disarming_transition	../backyard_flyer_solution.py	/^    def disarming_transition(self):$/;"	kind:member	line:106
+disarming_transition	../motion_planning.py	/^	def disarming_transition(self):$/;"	kind:member	line:109
+drone	../backyard_flyer_solution.py	/^    drone = BackyardFlyer(conn)$/;"	kind:variable	line:137
+drone	../motion_planning.py	/^	drone = MotionPlanning(conn)$/;"	kind:variable	line:297
+extract_polygons	../planning_utils.py	/^def extract_polygons(data):$/;"	kind:function	line:182
+find_start_goal	../planning_utils.py	/^def find_start_goal(skel, start, goal):$/;"	kind:function	line:207
+heading	../planning_utils.py	/^def heading(path):$/;"	kind:function	line:263
+heuristic	../planning_utils.py	/^def heuristic(position, goal_position):$/;"	kind:function	line:61
+landing_transition	../backyard_flyer_solution.py	/^    def landing_transition(self):$/;"	kind:member	line:101
+landing_transition	../motion_planning.py	/^	def landing_transition(self):$/;"	kind:member	line:104
+lat_lon	../planning_utils.py	/^def lat_lon(file):$/;"	kind:function	line:64
+local_position_callback	../backyard_flyer_solution.py	/^    def local_position_callback(self):$/;"	kind:member	line:42
+local_position_callback	../motion_planning.py	/^	def local_position_callback(self):$/;"	kind:member	line:52
+manual_transition	../backyard_flyer_solution.py	/^    def manual_transition(self):$/;"	kind:member	line:112
+manual_transition	../motion_planning.py	/^	def manual_transition(self):$/;"	kind:member	line:115
+motion_planning.py	../motion_planning.py	1;"	kind:file	line:1
+parser	../motion_planning.py	/^	parser = argparse.ArgumentParser()$/;"	kind:variable	line:291
+plan_path	../motion_planning.py	/^	def plan_path(self):$/;"	kind:member	line:126
+planning_utils.py	../planning_utils.py	1;"	kind:file	line:1
+send_waypoints	../motion_planning.py	/^	def send_waypoints(self):$/;"	kind:member	line:121
+start	../backyard_flyer_solution.py	/^    def start(self):$/;"	kind:member	line:118
+start	../motion_planning.py	/^	def start(self):$/;"	kind:member	line:241
+state_callback	../backyard_flyer_solution.py	/^    def state_callback(self):$/;"	kind:member	line:61
+state_callback	../motion_planning.py	/^	def state_callback(self):$/;"	kind:member	line:73
+takeoff_transition	../backyard_flyer_solution.py	/^    def takeoff_transition(self):$/;"	kind:member	line:86
+takeoff_transition	../motion_planning.py	/^	def takeoff_transition(self):$/;"	kind:member	line:92
+valid_actions	../planning_utils.py	/^def valid_actions(grid, current_node):$/;"	kind:function	line:101
+velocity_callback	../backyard_flyer_solution.py	/^    def velocity_callback(self):$/;"	kind:member	line:55
+velocity_callback	../motion_planning.py	/^	def velocity_callback(self):$/;"	kind:member	line:64
+waypoint_transition	../backyard_flyer_solution.py	/^    def waypoint_transition(self):$/;"	kind:member	line:94
+waypoint_transition	../motion_planning.py	/^	def waypoint_transition(self):$/;"	kind:member	line:97
