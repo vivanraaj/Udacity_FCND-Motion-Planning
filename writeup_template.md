@@ -41,12 +41,12 @@ First, I parse the csv data to map them into grid using the function 'create_gri
 Here I read the first line of the csv file using python's readline module and extract lat0 and lon0 as floating point values using regular expression.
 
 
-![Read Obstacle Data](./image1.jpg)
+![Read Obstacle Data](./image_1.jpg)
 
 #### 2. Set your current local position
 Here, I retrieved the global_position as a numpy array and converted them to current local position using global_to_local() function.
 
-![set local position](./image2.jpg)
+![set local position](./image_2.jpg)
 
 #### 3. Set grid start position from local position
 The start position is modified to the current position.
@@ -60,7 +60,7 @@ The grid goal position can be any position on the grid based on user input.Next,
 #### 5. Modify A* to include diagonal motion (or replace A* altogether)
 Here, modified the A* implementation provided in the planning_utils.py to include diagonal motion by creating conditions for actions Action.NW, Action.NE, Action.SW, Action.SE. This is shown below:
 
-![modify a*](./image3.jpg)
+![modify a*](./image_3.jpg)
 
 
 
