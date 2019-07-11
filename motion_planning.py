@@ -8,8 +8,8 @@ import re
 import numpy as np
 
 from queue import PriorityQueue
-from planning_utils import a_star, heuristic, lat_lon, create_grid, collides, extract_polygons,find_start_goal, collinearity
-from planning_utils import bres, coll, heading
+from planning_utils import *
+
 from skimage.morphology import medial_axis
 from skimage.util import invert
 
@@ -150,28 +150,16 @@ class MotionPlanning(Drone):
 		data = np.loadtxt('colliders.csv', delimiter=',', dtype='Float64', skiprows=2)
 
 		
-		# minimum and maximum of obstacle coordinates
-		# for usage in obstacle
-		north_min = np.floor(np.min(data[:, 0] - data[:, 3]))
-		east_min = np.floor(np.min(data[:, 1] - data[:, 4]))
-		north_max = np.ceil(np.max(data[:, 0] + data[:, 3]))
-		east_max = np.ceil(np.max(data[:, 1] + data[:, 4]))
-		
 		
 		start_loc = [self._longitude, self._latitude, self._altitude]
 		start = global_to_local(start_loc, self.global_home)
 		print("Local start position")
 		print(start)
-		
-		
-		#INPUT GOAL AS LONGITUDE/LATITUDE COORIDNATES
-		#goal_lat_lon = (-122.394813, 37.793815)
-		#goal_latlon = [goal_lat_lon[0], goal_lat_lon[1], 0]
 
 		# TODO: adapt to set goal as latitude / longitude position and convert
-        goal_gps = input('Enter goal GPS coords like (long,lat) without the parenthesis :')
-        g_gps = goal_gps.split(',')
-        goal_gps = np.array([float(g_gps[0]), float(g_gps[1]), 0.0])
+		goal_gps = input('Enter goal GPS coords like (long,lat) without the parenthesis :')
+		g_gps = goal_gps.split(',')
+		goal_gps = np.array([float(g_gps[0]), float(g_gps[1]), 0.0])
 
 
 		#Goal location converted to local coordinate frame
@@ -179,17 +167,26 @@ class MotionPlanning(Drone):
 		print("Local goal location")
 		print(goal_loc)
 		
+		# minimum and maximum of obstacle coordinates
+		# for usage in obstacle
+		north_min = np.floor(np.min(data[:, 0] - data[:, 3]))
+		east_min = np.floor(np.min(data[:, 1] - data[:, 4]))
+		north_max = np.ceil(np.max(data[:, 0] + data[:, 3]))
+		east_max = np.ceil(np.max(data[:, 1] + data[:, 4]))
+
+
 		if (goal_loc[0] < north_min or goal_loc[0] > north_max) or (goal_loc[1] < east_min or goal_loc[1] > east_max):
 			self.disarming_transition()
 			sys.exit("The goal is off the grid")
 		
-		if LA.norm(goagoal_locl[0:2] - start[0:2]) < 5:
+		if LA.norm(goal_loc[0:2] - start[0:2]) < 5:
 			self.disarming_transition()
 			sys.exit("The goal is the same position as the start")
 
+		# TODO: convert to current local position using global_to_local()
 		# Verify if the goal location is situated on top of the obstacle top
-		polygons = extract_polygons(data)
-		collision_probable = collides(polygons, goal_loc)
+		polygons = poly(data)
+		collision_probable = crossover(polygons, goal_loc)
 		if collision_probable[0] == True:
 			print("The drone will land on the top")
 			TARGET_ALTITUDE = collision_probable[1] + 5
@@ -208,36 +205,36 @@ class MotionPlanning(Drone):
 
 		#Create a grid with obstacle data
 		grid = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
-		skeleton = medial_axis(invert(grid))
+		frame = medial_axis(invert(grid))
 
-		#Find a start.goal location on the skeleton
-		skel_start, skel_goal = find_start_goal(skeleton, [start[0] - north_min, start[1] - east_min], [goal_loc[0] - north_min, goal_loc[1] - east_min])
+		#Find a start.goal location on the frame
+		frame_start, frame_goal = start_pos(frame, [start[0] - north_min, start[1] - east_min], [goal_loc[0] - north_min, goal_loc[1] - east_min])
 
-		#Find a path on the skeleton
-		path, cost, found = a_star(invert(skeleton).astype(np.int), heuristic, tuple(skel_start), tuple(skel_goal))
+		#Find a path on the frame
+		# implement a star for path searching
+		path, cost, found = a_star(invert(frame).astype(np.int), heuristic, tuple(frame_start), tuple(frame_goal))
 		if found == False:
 			self.disarming_transition()
-			sys.exit("No path was found!")
+			sys.exit("Unable to find a path!")
+		# if path is possible
 		path.append((int(goal_loc[0]) - int(north_min), int(goal_loc[1]) - int(east_min)))
 
-        # TODO: prune path to minimize number of waypoints
+		# TODO: prune path to minimize number of waypoints
 		if len(path) > 0:
 			print("Pruning Waypoints")
-			#Use collinearity, bresenham to prune path
+			#Use collinearity, bresenham to prune path and get headings
 			path = coll(path)
 			path = bres(path, grid)
-
-			#Find heading for each waypoint
 			path = heading(path)
 			
 			# Convert path to waypoints
 			waypoints = [[p[0] + int(north_min), p[1] + int(east_min), TARGET_ALTITUDE, p[2]] for p in path]
-			print("Number of waypoints: ", len(waypoints))
-			print("Waypoints: ")
-			print(waypoints)
+			print("Waypoints: ", waypoints)
 		self.waypoints = waypoints
 		print("set wayponits")
 
+		# TODO: send waypoints to sim (this is just for visualization of waypoints)
+		# self.send_waypoints()
 
 	def start(self):
 		self.start_log("Logs", "NavLog.txt")
@@ -250,43 +247,6 @@ class MotionPlanning(Drone):
 		#    pass
 
 		self.stop_log()
-
-'''
-		# TODO: convert to current local position using global_to_local()
-		
-		print('global home {0}, position {1}, local position {2}'.format(self.global_home, self.global_position,
-																		 self.local_position))
-		# Read in obstacle map
-		data = np.loadtxt('colliders.csv', delimiter=',', dtype='Float64', skiprows=2)
-		
-		# Define a grid for a particular altitude and safety margin around obstacles
-		grid, north_offset, east_offset = create_grid(data, TARGET_ALTITUDE, SAFETY_DISTANCE)
-		print("North offset = {0}, east offset = {1}".format(north_offset, east_offset))
-		# Define starting point on the grid (this is just grid center)
-		grid_start = (-north_offset, -east_offset)
-		# TODO: convert start position to current position rather than map center
-		
-		# Set goal as some arbitrary position on the grid
-		grid_goal = (-north_offset + 10, -east_offset + 10)
-		# TODO: adapt to set goal as latitude / longitude position and convert
-
-		# Run A* to find a path from start to goal
-		# TODO: add diagonal motions with a cost of sqrt(2) to your A* implementation
-		# or move to a different search space such as a graph (not done here)
-		print('Local Start and Goal: ', grid_start, grid_goal)
-		path, _ = a_star(grid, heuristic, grid_start, grid_goal)
-		# TODO: prune path to minimize number of waypoints
-		# TODO (if you're feeling ambitious): Try a different approach altogether!
-
-		# Convert path to waypoints
-		waypoints = [[p[0] + north_offset, p[1] + east_offset, TARGET_ALTITUDE, 0] for p in path]
-		# Set self.waypoints
-		self.waypoints = waypoints
-		# TODO: send waypoints to sim (this is just for visualization of waypoints)
-		self.send_waypoints()
-'''
-
-
 
 if __name__ == "__main__":
 	parser = argparse.ArgumentParser()

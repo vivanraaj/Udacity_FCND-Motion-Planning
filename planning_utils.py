@@ -9,17 +9,6 @@ from shapely.geometry import Polygon, Point
 from bresenham import bresenham
 import sys
 
-def collinearity(p1, p2, p3, epsilon): 
-	collinear = False
-	p1= np.append(p1, 1)
-	p2= np.append(p2, 1)
-	p3= np.append(p3, 1)
-	mat= np.vstack((p1, p2, p3))
-	det= np.linalg.det(mat)
-	if det < epsilon:
-		collinear = True
-
-	return collinear
 
 def create_grid(data, drone_altitude, safety_distance):
 	"""
@@ -61,16 +50,17 @@ def create_grid(data, drone_altitude, safety_distance):
 def heuristic(position, goal_position):
 	return np.linalg.norm(np.array(position) - np.array(goal_position))
 
-'''
-def lat_lon(file):
-	#Read the lat0, lon0 from colliders data into floating point values
-	with open(file) as File:
-		lat_lon = File.readline()
-	split = re.split(', ', lat_lon)
-	lat = re.search('lat0 (.*)', split[0]).group(1)
-	lon = re.search('lon0 (.*)', split[1]).group(1)
-	return float(lat), float(lon)
-'''
+def collinearity(p1, p2, p3, epsilon): 
+	collinear = False
+	p1= np.append(p1, 1)
+	p2= np.append(p2, 1)
+	p3= np.append(p3, 1)
+	mat= np.vstack((p1, p2, p3))
+	det= np.linalg.det(mat)
+	if det < epsilon:
+		collinear = True
+
+	return collinear
 
 # Assume all actions cost the same.
 class Action(Enum):
@@ -120,6 +110,8 @@ def valid_actions(grid, current_node):
 	if y + 1 > m or grid[x, y + 1] == 1:
 		valid_actions.remove(Action.EAST)
 
+
+	# new actions
 	if (x - 1 < 0 or y - 1 < 0) or grid[x - 1, y - 1] == 1:
 		valid_actions.remove(Action.NORTH_WEST)
 	if (x - 1 < 0 or y + 1 > m) or grid[x - 1, y + 1] == 1:
@@ -176,12 +168,15 @@ def a_star(grid, h, start, goal):
 			path.append(branch[n][1])
 			n = branch[n][1]
 		path.append(branch[n][1])
-
+	else:
+		print('**********************')
+		print('Failed to find a path!')
+		print('**********************') 
 	return path[::-1], path_cost, found
 
 
 
-def extract_polygons(data):
+def poly(data):
 
 	polygons = []
 	for i in range(data.shape[0]):
@@ -199,23 +194,36 @@ def extract_polygons(data):
 
 	return polygons
 
-def collides(polygons, point):
+def crossover(polygons, point):
 
 	for (p,h) in polygons:
 		if p.contains(Point(point)):
 			return (True, h)
 	return (False, h)
 
-def find_start_goal(skel, start, goal):
+def start_pos(skel, start, goal):
 
 	start= np.array(start)
 	goal = np.array(goal)
-	skel_point = np.array(np.transpose(skel.nonzero()))
-	start_dist = (np.linalg.norm(skel_point - start, axis = 1)).argmin()
-	near_start = skel_point[start_dist]
-	goal_dist = (np.linalg.norm(skel_point - goal, axis = 1)).argmin()
-	near_goal = skel_point[goal_dist]
+	frame_point = np.array(np.transpose(skel.nonzero()))
+	start_dist = (np.linalg.norm(frame_point - start, axis = 1)).argmin()
+	near_start = frame_point[start_dist]
+	goal_dist = (np.linalg.norm(frame_point - goal, axis = 1)).argmin()
+	near_goal = frame_point[goal_dist]
 	return near_start, near_goal
+
+def heading(path):
+	path[0] = list(path[0])
+	path[0].append(0)
+	for i in range(0, len(path)-1):
+		p1 = path[i]
+		p2 = path[i+1]
+		head = np.arctan2((p2[1] - p1[1]), (p2[0] - p1[0]))
+		path[i+1] = list(path[i+1])
+		path[i+1].append(head)
+
+	return path
+
 
 def bres(path, grid):
 	i = 0
@@ -260,18 +268,4 @@ def coll(path):
 			if i > len(path) - 3:
 				break
 	return path
-
-
-def heading(path):
-	path[0] = list(path[0])
-	path[0].append(0)
-	for i in range(0, len(path)-1):
-		p1 = path[i]
-		p2 = path[i+1]
-		head = np.arctan2((p2[1] - p1[1]), (p2[0] - p1[0]))
-		path[i+1] = list(path[i+1])
-		path[i+1].append(head)
-
-	return path
-
 

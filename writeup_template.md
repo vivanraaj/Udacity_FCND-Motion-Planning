@@ -27,45 +27,51 @@ You're reading it! Below I describe how I addressed each rubric point and where 
 ### Explain the Starter Code
 
 #### 1. Explain the functionality of what's provided in `motion_planning.py` and `planning_utils.py`
-These scripts contain a basic planning implementation that includes...
 
-And here's a lovely image of my results (ok this image has nothing to do with it, but it's a nice example of how to include images in your writeup!)
-![Top Down View](./misc/high_up.png)
+The main file to run the autonomous mode is motion_planning.py while the planning_utils.py file provides the helper codes. 
 
-Here's | A | Snappy | Table
---- | --- | --- | ---
-1 | `highlight` | **bold** | 7.41
-2 | a | b | c
-3 | *italic* | text | 403
-4 | 2 | 3 | abcd
+In motion_planning.py, the default functions to run the drone describes the common transition that the drone will perform in autonomous mode. In the 'planning' state, the drone will perform the new functions which I added.
+
+First, I parse the csv data to map them into grid using the function 'create_grid'. The objective of my implementation is to enable any coordinates to be set as goal coordinates. Once the start and goal coordiantes are determined, I run a path searching algorithm called 'a_star' to find the optimal path in the grid. Euclidean distance is used to check for distance between the drone's current position and the goal position.  
+
 
 ### Implementing Your Path Planning Algorithm
 
 #### 1. Set your global home position
-Here students should read the first line of the csv file, extract lat0 and lon0 as floating point values and use the self.set_home_position() method to set global home. Explain briefly how you accomplished this in your code.
+Here I read the first line of the csv file using python's readline module and extract lat0 and lon0 as floating point values using regular expression.
 
 
-And here is a lovely picture of our downtown San Francisco environment from above!
-![Map of SF](./misc/map.png)
+![Read Obstacle Data](./image1.jpg)
 
 #### 2. Set your current local position
-Here as long as you successfully determine your local position relative to global home you'll be all set. Explain briefly how you accomplished this in your code.
+Here, I retrieved the global_position as a numpy array and converted them to current local position using global_to_local() function.
 
-
-Meanwhile, here's a picture of me flying through the trees!
-![Forest Flying](./misc/in_the_trees.png)
+![set local position](./image2.jpg)
 
 #### 3. Set grid start position from local position
-This is another step in adding flexibility to the start location. As long as it works you're good to go!
+The start position is modified to the current position.
+
 
 #### 4. Set grid goal position from geodetic coords
-This step is to add flexibility to the desired goal location. Should be able to choose any (lat, lon) within the map and have it rendered to a goal location on the grid.
+The grid goal position can be any position on the grid based on user input.Next,I run some checks to check if this position is not on top of a building or on the ground. If the goal position does not collide with any obstacle polygon, the drones altitude is set to 5 meters. If it does collide with a building, the drone altitude is set to 5 metres plus the building height. 
+
+
 
 #### 5. Modify A* to include diagonal motion (or replace A* altogether)
-Minimal requirement here is to modify the code in planning_utils() to update the A* implementation to include diagonal motions on the grid that have a cost of sqrt(2), but more creative solutions are welcome. Explain the code you used to accomplish this step.
+Here, modified the A* implementation provided in the planning_utils.py to include diagonal motion by creating conditions for actions Action.NW, Action.NE, Action.SW, Action.SE. This is shown below:
+
+![modify a*](./image3.jpg)
+
+
 
 #### 6. Cull waypoints 
-For this step you can use a collinearity test or ray tracing method like Bresenham. The idea is simply to prune your path of unnecessary waypoints. Explain the code you used to accomplish this step.
+The path is pruned using collinearity test to check for collinearity of the points in the path, bresenham function and finally the waypoints headings are calculated.
+The idea is simply to prune the path of unnecessary waypoints.
+
+![collinearity](./image_4_coll.jpg)
+
+![full pruning](./image_5_prune.jpg)
+
 
 
 
